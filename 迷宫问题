@@ -1,0 +1,150 @@
+struct stack* creatStack()
+{
+	struct stack* myStack = (struct stack*)malloc(sizeof(struct stack));
+	myStack->stacktop = NULL;
+	myStack->size = 0;
+	return myStack;
+}
+
+struct stacknode* creatStacknode(struct Box temp)
+{
+	struct stacknode* newnode = (struct stacknode*)malloc(sizeof(struct stacknode));
+	newnode->Temp = temp;
+	newnode->next = NULL;
+	return newnode;
+}
+
+void stack_print(struct stack myStack)
+{
+	if (myStack.size == 0)
+	{
+		printf("栈中为空\n");
+		return;
+	}
+	while (myStack.size--)
+	{
+		printf("%d %d %d\n", myStack.stacktop->Temp.x, myStack.stacktop->Temp.y, myStack.stacktop->Temp.di );
+		myStack.stacktop = myStack.stacktop->next;
+	}
+	printf("\n");
+}
+
+void push_stack_node(struct stack* myStack,Box temp)
+{
+	struct stacknode* newnode = creatStacknode(temp);
+	newnode->next = myStack->stacktop;
+	myStack->stacktop = newnode;
+	myStack->size++;
+}
+
+Box get_top(stack* myStack)
+{
+	if (myStack->stacktop == NULL)
+	{
+		printf("栈内没有值，无法获取\n");
+		return{ 0 };
+	}
+	return myStack->stacktop->Temp;
+}
+
+void pop_stack_node(struct stack* myStack)
+{
+	if (myStack->size == 0)
+		return;
+	struct stacknode* next = myStack->stacktop->next;
+	free(myStack->stacktop);
+	myStack->stacktop = next;
+	myStack->size--;
+}
+
+void clear_stack(struct stack* myStack)
+{
+	if (myStack->size == 0)
+		return;
+	while (myStack->size)
+	{
+		pop_stack_node(myStack);
+	}
+}
+
+void destroy_stack(struct stack* myStack)
+{
+	clear_stack(myStack);
+	free(myStack);
+	myStack = NULL;
+}
+
+
+void DisplayMaze(int board[M + 2][N + 2], int row, int col)
+{
+	int i, j = 0;
+	for (j = 0; j < col; j++)//打印上界线
+	{
+		printf("_____");
+	}
+	printf("_\n");
+	for (i = 0; i < row; i++)//打印格子
+	{
+
+		for (j = 0; j < col; j++)
+		{
+			printf("| %2d ", board[i + 1][j + 1]);
+		}
+		printf("|\n");
+		if (i < row - 1)//打印分割线
+		{
+			for (j = 0; j < col; j++)
+			{
+				printf("|----");
+			}
+			printf("|\n");
+		}
+	}
+}
+
+bool findPath(int maze[M + 2][N + 2], Direction direct[], stack* myStack)
+{
+	Box tepm = { 0, 0, 0 };
+	Box* temp = &tepm;
+	int x = 0, y = 0, di = 0;//迷宫格子当前处理单元的纵横坐标和方向
+	int line = 0, col = 0;	//迷宫数组下一个单元的行列坐标
+	maze[1][1] = -1;
+
+	temp->x = 1;
+	temp->y = 1;
+	temp->di = -1;
+	push_stack_node(myStack, tepm);
+	while (myStack->size!=0)
+	{
+		tepm = get_top(myStack);
+		pop_stack_node(myStack);
+		x = temp->x;
+		y = temp->y;
+		di = temp->di+1;
+		while (di < 4)
+		{
+			line = x + direct[di].incX;
+			col = y + direct[di].incY;
+			if (maze[line][col] == 0)
+			{
+				
+				tepm.x = x;
+				temp->y = y;
+				temp->di = di;
+				push_stack_node(myStack, tepm);
+				x = line;
+				y = col;
+				maze[line][col] = -1;
+				DisplayMaze(maze, M, N);
+				if (x == M&&y == N){
+					printf("找到了路径\n");
+					stack_print(*myStack);
+					return true;
+				}
+				else di = 0;
+			}
+			else di++;
+		}
+	}
+	return false;
+}
