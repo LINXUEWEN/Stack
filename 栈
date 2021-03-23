@@ -1,0 +1,79 @@
+struct stack* creatStack()
+{
+	struct stack* myStack = (struct stack*)malloc(sizeof(struct stack));
+	myStack->stacktop = NULL;
+	myStack->size = 0;
+	return myStack;
+}
+
+struct stacknode* creatStacknode(stack_data_type data)
+{
+	struct stacknode* newnode = (struct stacknode*)malloc(sizeof(struct stacknode));
+	newnode->data = data;
+	newnode->next = NULL;
+	return newnode;
+}
+
+
+void stack_print(struct stack myStack)
+{
+	if (myStack.size == 0)
+	{
+		printf("栈中为空\n");
+		return;
+	}
+	while (myStack.size--)
+	{
+		printf("%d ", myStack.stacktop->data);
+		myStack.stacktop=myStack.stacktop->next;
+	}
+	printf("\n");
+}
+
+
+void push_stack_node(struct stack* myStack, stack_data_type data)
+{
+	struct stacknode* newnode = creatStacknode(data);
+	newnode->next = myStack->stacktop;
+	myStack->stacktop = newnode;
+	myStack->size++;
+}
+
+stack_data_type get_top(struct stack* myStack)
+{
+	if (myStack->stacktop == NULL)
+	{
+		printf("栈内没有值，无法获取\n");
+		return myStack->size;
+	}
+	return myStack->stacktop->data;
+}
+
+void pop_stack_node(struct stack* myStack)
+{
+	stack_data_type getnum = get_top(myStack);
+	if (myStack->size == 0)
+		return;
+	struct stacknode* next = myStack->stacktop->next;
+	free(myStack->stacktop);
+	myStack->stacktop = next;
+	myStack->size--;
+}
+
+
+void clear_stack(struct stack* myStack)
+{
+	if (myStack->size == 0)
+		return;
+	while (myStack->size)
+	{
+		pop_stack_node(myStack);
+	}
+}
+
+void destroy_stack(struct stack* myStack)
+{
+	clear_stack(myStack);
+	free(myStack);
+	myStack = NULL;
+}
