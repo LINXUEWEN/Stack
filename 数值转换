@@ -1,0 +1,17 @@
+void Conversion(int num, struct stack* myStack)
+{
+	while (num)
+	{
+		push_stack_node(myStack, num%systemNum);
+		num = num / systemNum;
+	}
+	while (myStack->size != 0)
+	{
+		int e = get_top(myStack);
+		pop_stack_node(myStack);
+		printf("%d", e);
+	}
+	printf("\n");
+	//clear_stack(myStack);
+	destroy_stack(myStack);
+}
