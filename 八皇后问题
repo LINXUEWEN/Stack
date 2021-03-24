@@ -1,0 +1,49 @@
+int place[8] = { 0 };											//第n个皇后所占位置的列
+bool flag[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };						//第col列是否可占，1代表可占，0代表不可
+bool d1[15] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };	//表示上对角线是否可占
+bool d2[15] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };	//表示下对角线是否可占
+int number = 0;													//统计解的数量
+
+#define N 8
+
+void print()
+{
+	int col = 0, i = 0, j = 0;
+	number++;
+	printf("No.%d\n", number);
+	int table[N][N] = { 0 };
+	for (col = 0; col < N; col++)
+		table[col][place[col]] = 1;
+	for (i = 0; i < N; i++)
+	{
+		for (j = 0; j < N; j++)
+		{
+			printf("%d ", table[j][i]);
+		}
+		printf("\n");
+	}
+}
+
+
+void gernerate(int n)//n是行号
+{
+	int col = 0;
+	for (col = 0; col < N; col++)
+	{
+		if (flag[col] && d1[n - col + 7] && d2[n + col])
+		{
+			place[n] = col;
+			flag[col] = false;
+			d1[n - col + 7] = false;
+			d2[n + col] = false;
+			if (n < 7)
+				gernerate(n + 1);
+			else
+				print();
+
+			flag[col] = true;
+			d1[n - col + 7] = true;
+			d2[n + col] = true;
+		}
+	}
+}
